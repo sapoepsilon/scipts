@@ -1,32 +1,48 @@
-#!/bin/bash
+#!/bin/sh -e
 
-# Install zsh
-sudo apt-get update
-sudo apt-get install -y zsh
+echo "What is your OS (macOS or Debian)?"
+read os
 
-# Set zsh as the default shell
-if chsh -s $(which zsh); then
-    echo "Successfully set zsh as the default shell"
-else
-    echo "Failed to set zsh as the default shell. Please enter your password:"
-    if sudo chsh -s $(which zsh); then
-        echo "Successfully set zsh as the default shell"
-    else
-        echo "Failed to set zsh as the default shell"
-    fi
-fi
-# Install Oh My Zsh
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-
-# Install Powerlevel10k
-git clone https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel10k
-
-# Set Powerlevel10k as the theme in ~/.zshrc
-echo "ZSH_THEME=powerlevel10k/powerlevel10k" >> ~/.zshrc
-
-# Install plugins
-git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-
-# Append plugins to .zshrc
-echo "plugins=(git jump zsh-autosuggestions sublime zsh-history-substring-search jsontools zsh-syntax-highlighting zsh-interactive-cd)" >> ~/.zshrc
-source ~/.zshrc
+if [ $os = "macOS" ]; then
+  echo "Checking for git and brew..."
+  if ! [ -x "$(command -v git)" ]; then
+    echo "Error: git is not installed. Please install git and run the script again."
+    exit 1
+  fi
+  if ! [ -x "$(command -v brew)" ]; then
+    echo "Error: brew is not installed. Please install brew and run the script again."
+    exit 1
+  fi
+  echo "Installing ZSH"
+  brew install zsh
+  echo "Setting ZSH as default shell"
+  chsh -s $(which zsh)
+  echo "Installing Oh My Zsh"
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+  echo "Installing Powerlevel10k"
+  git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
+  echo 'POWERLEVEL10K_MODE="nerd-fonts-complete"' >>! ~/.zshrc
+  echo 'ZSH_THEME="powerlevel10k/powerlevel10k"' >>! ~/.zshrc
+  echo "Installing plugins"
+  echo "plugins=(git jump zsh-autosuggestions sublime zsh-history-substring-search jsontools zsh-syntax-highlighting zsh-interactive-cd)" >> ~/.zshrc
+  echo "Please restart your terminal for changes to take effect"
+elif [ $os = "Debian" ]; then
+  echo "Checking for git..."
+  if ! [ -x "$(command -v git)" ]; then
+    echo "Error: git is not installed. Please install git and run the script again."
+    echo "Installing git..."
+    sudo apt-get install git
+  fi
+  echo "Installing ZSH"
+  sudo apt-get install zsh
+  echo "Setting ZSH as default shell"
+  chsh -s $(which zsh)
+  echo "Installing Oh My Zsh"
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+  echo "Installing Powerlevel10k"
+  git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
+  echo 'POWERLEVEL10K_MODE="nerd-fonts-complete"' >>! ~/.zshrc
+  echo 'ZSH_THEME="powerlevel10k/powerlevel10k"' >>! ~/.zshrc
+  echo "Installing plugins"
+  echo "plugins=(git jump zsh-autosuggestions sublime zsh-history-substring-search jsontools zsh-syntax-highlighting zsh-interactive-cd)" >> ~/.zshrc
+  echo "Please restart your terminal for changes to take effect"
