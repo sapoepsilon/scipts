@@ -1,11 +1,16 @@
 #!/bin/sh -e
 
-echo "What is your OS (macOS or Debian)?"
+echo "What is your OS? (Enter 1 for macOS or 2 for Ubuntu)"
 read os
 
-if [ $os = "macOS" ]; then
-  echo "Checking for git and brew..."
-  if ! [ -x "$(command -v git)" ]; then
+while [ "$os" != "1" ] && [ "$os" != "2" ]; do
+  echo "Invalid input. Please enter 1 for macOS or 2 for Ubuntu."
+  read os
+done
+
+if [ $os = "1" ]; then
+  echo "You have selected macOS"
+   if ! [ -x "$(command -v git)" ]; then
     echo "Error: git is not installed. Please install git and run the script again."
     exit 1
   fi
@@ -26,12 +31,16 @@ if [ $os = "macOS" ]; then
   echo "Installing plugins"
   echo "plugins=(git jump zsh-autosuggestions sublime zsh-history-substring-search jsontools zsh-syntax-highlighting zsh-interactive-cd)" >> ~/.zshrc
   echo "Please restart your terminal for changes to take effect"
-elif [ $os = "Debian" ]; then
+  # code for macOS
+elif [ $os = "2" ]; then
+
+  # code for Ubuntu
   echo "Checking for git..."
   if ! [ -x "$(command -v git)" ]; then
     echo "Error: git is not installed. Please install git and run the script again."
     echo "Installing git..."
     sudo apt-get install git
+    exit 1
   fi
   echo "Installing ZSH"
   sudo apt-get install zsh
@@ -46,3 +55,5 @@ elif [ $os = "Debian" ]; then
   echo "Installing plugins"
   echo "plugins=(git jump zsh-autosuggestions sublime zsh-history-substring-search jsontools zsh-syntax-highlighting zsh-interactive-cd)" >> ~/.zshrc
   echo "Please restart your terminal for changes to take effect"
+
+fi
